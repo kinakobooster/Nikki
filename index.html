@@ -14,24 +14,56 @@
         }
         
         .container {
-            height: 100vh;
+            height: 80vh;
+            margin-top: 10vh;
             overflow-x: scroll;
             overflow-y: hidden;
             display: flex;
-            flex-direction: row-reverse;
-            writing-mode: vertical-rl;
-            text-orientation: upright;
-            padding: 40px;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            padding: 0 20px;
             box-sizing: border-box;
+            align-items: center;
         }
         
         .content {
             height: 100%;
-            margin-left: 60px;
+            margin-right: 60px;
+            flex-shrink: 0;
+            width: auto;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+        }
+        
+        .progress-dots {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+        
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #ccc;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .dot.active {
+            background-color: #333;
+        }
+        
+        .dot:hover {
+            background-color: #666;
         }
         
         .content:last-child {
-            margin-left: 0;
+            margin-right: 0;
         }
         
         h2 {
@@ -111,20 +143,81 @@
             background: #555;
         }
     </style>
+    <script>
+        window.addEventListener('load', function() {
+            const container = document.querySelector('.container');
+            const dots = document.querySelectorAll('.dot');
+            const contents = document.querySelectorAll('.content');
+            
+            if (container) {
+                // Scroll to the rightmost position
+                container.scrollTo({
+                    left: container.scrollWidth,
+                    behavior: 'smooth'
+                });
+            }
+            
+            // Update active dot based on scroll position
+            function updateActiveDot() {
+                const scrollLeft = container.scrollLeft;
+                const containerWidth = container.clientWidth;
+                const scrollWidth = container.scrollWidth;
+                
+                // Calculate which article is currently visible (reversed order)
+                const scrollProgress = 1 - (scrollLeft / (scrollWidth - containerWidth));
+                const activeIndex = Math.round(scrollProgress * (contents.length - 1));
+                
+                dots.forEach((dot, index) => {
+                    if (index === activeIndex) {
+                        dot.classList.add('active');
+                    } else {
+                        dot.classList.remove('active');
+                    }
+                });
+            }
+            
+            // Add scroll event listener
+            if (container) {
+                container.addEventListener('scroll', updateActiveDot);
+                updateActiveDot(); // Initial call
+            }
+            
+            // Add click handlers to dots
+            dots.forEach((dot, index) => {
+                dot.addEventListener('click', () => {
+                    // Calculate scroll position for this article (reversed order)
+                    const articleWidth = contents[0].offsetWidth + 60; // width + margin
+                    const targetScroll = scrollWidth - containerWidth - (index * articleWidth);
+                    
+                    container.scrollTo({
+                        left: targetScroll,
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        });
+    </script>
 </head>
 <body>
     <div class="container">
         <div class="content">
-            <h2>001_はじめに</h2>
-            <h3>はじめに</h3>
-<p>これは日記システムのテストです。</p>
-<p>縦書きで右から左へスクロールする静的サイトを生成します。</p>
-<h3>特徴</h3>
+            <h2>003_明日の予定</h2>
+            <h3>明日の予定</h3>
+<p>明日はこのシステムをさらに改良する予定です。</p>
+<h3>やることリスト</h3>
 <ul>
-<li>Markdownファイルから自動生成</li>
-<li>縦書きレイアウト</li>
-<li>右から左へのスクロール</li>
-<li>シンプルで読みやすいデザイン</li></ul>
+<li>フォントの調整</li>
+<li>レスポンシブデザインの改善</li>
+<li>ダークモードの実装</li>
+<li>アニメーションの追加</li>
+</ul>
+<p>縦書きの日本語は、横書きとは違った趣があります。 特に長文を読む際には、目の動きが自然で疲れにくいという利点があります。</p>
+<h3>追加機能のアイデア</h3>
+<ul>
+<li>目次の自動生成</li>
+<li>タグ機能</li>
+<li>検索機能</li>
+<li>RSS配信</li></ul>
         </div>
         <div class="content">
             <h2>002_今日の出来事</h2>
@@ -145,24 +238,22 @@
 <blockquote>縦書きでも正しく表示されることを確認します。</blockquote>
         </div>
         <div class="content">
-            <h2>003_明日の予定</h2>
-            <h3>明日の予定</h3>
-<p>明日はこのシステムをさらに改良する予定です。</p>
-<h3>やることリスト</h3>
+            <h2>001_はじめに</h2>
+            <h3>はじめに</h3>
+<p>これは日記システムのテストです。</p>
+<p>縦書きで右から左へスクロールする静的サイトを生成します。</p>
+<h3>特徴</h3>
 <ul>
-<li>フォントの調整</li>
-<li>レスポンシブデザインの改善</li>
-<li>ダークモードの実装</li>
-<li>アニメーションの追加</li>
-</ul>
-<p>縦書きの日本語は、横書きとは違った趣があります。 特に長文を読む際には、目の動きが自然で疲れにくいという利点があります。</p>
-<h3>追加機能のアイデア</h3>
-<ul>
-<li>目次の自動生成</li>
-<li>タグ機能</li>
-<li>検索機能</li>
-<li>RSS配信</li></ul>
+<li>Markdownファイルから自動生成</li>
+<li>縦書きレイアウト</li>
+<li>右から左へのスクロール</li>
+<li>シンプルで読みやすいデザイン</li></ul>
         </div>
+    </div>
+    <div class="progress-dots">
+        <div class="dot" data-index="0"></div>
+        <div class="dot" data-index="1"></div>
+        <div class="dot" data-index="2"></div>
     </div>
 </body>
 </html>

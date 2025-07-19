@@ -101,24 +101,56 @@ def generate_site(docs_dir='docs', output_file='index.html'):
         }
         
         .container {
-            height: 100vh;
+            height: 80vh;
+            margin-top: 10vh;
             overflow-x: scroll;
             overflow-y: hidden;
             display: flex;
-            flex-direction: row-reverse;
-            writing-mode: vertical-rl;
-            text-orientation: upright;
-            padding: 40px;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            padding: 0 20px;
             box-sizing: border-box;
+            align-items: center;
         }
         
         .content {
             height: 100%;
-            margin-left: 60px;
+            margin-right: 60px;
+            flex-shrink: 0;
+            width: auto;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+        }
+        
+        .progress-dots {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+        
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #ccc;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .dot.active {
+            background-color: #333;
+        }
+        
+        .dot:hover {
+            background-color: #666;
         }
         
         .content:last-child {
-            margin-left: 0;
+            margin-right: 0;
         }
         
         h2 {
@@ -198,12 +230,67 @@ def generate_site(docs_dir='docs', output_file='index.html'):
             background: #555;
         }
     </style>
+    <script>
+        window.addEventListener('load', function() {
+            const container = document.querySelector('.container');
+            const dots = document.querySelectorAll('.dot');
+            const contents = document.querySelectorAll('.content');
+            
+            if (container) {
+                // Scroll to the rightmost position
+                container.scrollTo({
+                    left: container.scrollWidth,
+                    behavior: 'smooth'
+                });
+            }
+            
+            // Update active dot based on scroll position
+            function updateActiveDot() {
+                const scrollLeft = container.scrollLeft;
+                const containerWidth = container.clientWidth;
+                const scrollWidth = container.scrollWidth;
+                
+                // Calculate which article is currently visible (reversed order)
+                const scrollProgress = 1 - (scrollLeft / (scrollWidth - containerWidth));
+                const activeIndex = Math.round(scrollProgress * (contents.length - 1));
+                
+                dots.forEach((dot, index) => {
+                    if (index === activeIndex) {
+                        dot.classList.add('active');
+                    } else {
+                        dot.classList.remove('active');
+                    }
+                });
+            }
+            
+            // Add scroll event listener
+            if (container) {
+                container.addEventListener('scroll', updateActiveDot);
+                updateActiveDot(); // Initial call
+            }
+            
+            // Add click handlers to dots
+            dots.forEach((dot, index) => {
+                dot.addEventListener('click', () => {
+                    // Calculate scroll position for this article (reversed order)
+                    const articleWidth = contents[0].offsetWidth + 60; // width + margin
+                    const targetScroll = scrollWidth - containerWidth - (index * articleWidth);
+                    
+                    container.scrollTo({
+                        left: targetScroll,
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        });
+    </script>
 </head>
 <body>
     <div class="container">
 '''
     
-    for md_file in md_files:
+    # Reverse the order so 001 is rightmost
+    for md_file in reversed(md_files):
         file_content = md_file.read_text(encoding='utf-8')
         html_body = simple_markdown_to_html(file_content)
         
@@ -212,6 +299,14 @@ def generate_site(docs_dir='docs', output_file='index.html'):
             {html_body}
         </div>
 '''
+    
+    html_content += '''    </div>
+    <div class="progress-dots">
+'''
+    
+    # Add dots for each article (in original order)
+    for i in range(len(md_files)):
+        html_content += f'        <div class="dot" data-index="{i}"></div>\n'
     
     html_content += '''    </div>
 </body>
