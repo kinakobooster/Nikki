@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nikki</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            font-family: 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+            overflow-y: hidden;
+        }
+        
+        .container {
+            height: 100vh;
+            overflow-x: scroll;
+            overflow-y: hidden;
+            display: flex;
+            flex-direction: row-reverse;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            padding: 40px;
+            box-sizing: border-box;
+        }
+        
+        .content {
+            height: 100%;
+            margin-left: 60px;
+        }
+        
+        .content:last-child {
+            margin-left: 0;
+        }
+        
+        h2 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: #333;
+            font-weight: bold;
+            letter-spacing: 0.1em;
+        }
+        
+        h3 {
+            font-size: 1.4em;
+            margin-bottom: 15px;
+            color: #444;
+            font-weight: bold;
+        }
+        
+        p {
+            line-height: 2;
+            font-size: 1.1em;
+            color: #444;
+            margin-bottom: 1.5em;
+            text-align: justify;
+        }
+        
+        ul, ol {
+            margin-bottom: 1.5em;
+            padding-right: 1.5em;
+        }
+        
+        li {
+            margin-bottom: 0.5em;
+            line-height: 2;
+        }
+        
+        code {
+            background-color: #e8e8e8;
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        pre {
+            background-color: #e8e8e8;
+            padding: 1em;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin-bottom: 1.5em;
+        }
+        
+        pre code {
+            background-color: transparent;
+            padding: 0;
+        }
+        
+        blockquote {
+            border-right: 4px solid #ddd;
+            padding-right: 1em;
+            margin: 0 0 1.5em 0;
+            color: #666;
+        }
+        
+        ::-webkit-scrollbar {
+            height: 12px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 6px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="content">
+            <h2>001_はじめに</h2>
+            <h3>はじめに</h3>
+<p>これは日記システムのテストです。</p>
+<p>縦書きで右から左へスクロールする静的サイトを生成します。</p>
+<h3>特徴</h3>
+<ul>
+<li>Markdownファイルから自動生成</li>
+<li>縦書きレイアウト</li>
+<li>右から左へのスクロール</li>
+<li>シンプルで読みやすいデザイン</li></ul>
+        </div>
+        <div class="content">
+            <h2>002_今日の出来事</h2>
+            <h3>今日の出来事</h3>
+<p>今日は新しい静的サイトジェネレーターを作成しました。</p>
+<p>Pythonを使って、Markdownファイルを読み取り、美しい縦書きのHTMLに変換するスクリプトです。</p>
+<h3>技術的な詳細</h3>
+<p>使用した技術：</p>
+<ul>
+<li>Python 3</li>
+<li>Markdownライブラリ</li>
+<li>CSS3の<code>writing-mode</code>プロパティ</li>
+</ul>
+<p>コードブロックのテスト：</p>
+<pre><code>def hello():
+<p>    print("こんにちは")</code></pre></p>
+<blockquote>引用文のテストです。</blockquote>
+<blockquote>縦書きでも正しく表示されることを確認します。</blockquote>
+        </div>
+        <div class="content">
+            <h2>003_明日の予定</h2>
+            <h3>明日の予定</h3>
+<p>明日はこのシステムをさらに改良する予定です。</p>
+<h3>やることリスト</h3>
+<ul>
+<li>フォントの調整</li>
+<li>レスポンシブデザインの改善</li>
+<li>ダークモードの実装</li>
+<li>アニメーションの追加</li>
+</ul>
+<p>縦書きの日本語は、横書きとは違った趣があります。 特に長文を読む際には、目の動きが自然で疲れにくいという利点があります。</p>
+<h3>追加機能のアイデア</h3>
+<ul>
+<li>目次の自動生成</li>
+<li>タグ機能</li>
+<li>検索機能</li>
+<li>RSS配信</li></ul>
+        </div>
+    </div>
+</body>
+</html>
