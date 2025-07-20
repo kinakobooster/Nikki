@@ -125,32 +125,6 @@ def generate_site(docs_dir='docs', output_file='index.html'):
             text-orientation: mixed;
         }
         
-        .progress-dots {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 10px;
-            z-index: 100;
-        }
-        
-        .dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background-color: #ccc;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        
-        .dot.active {
-            background-color: #333;
-        }
-        
-        .dot:hover {
-            background-color: #666;
-        }
         
         .content:last-child {
             margin-right: 0;
@@ -238,8 +212,6 @@ def generate_site(docs_dir='docs', output_file='index.html'):
     <script>
         window.addEventListener('load', function() {
             const container = document.querySelector('.container');
-            const dots = document.querySelectorAll('.dot');
-            const contents = document.querySelectorAll('.content');
             
             if (container) {
                 // Scroll to the rightmost position
@@ -248,67 +220,6 @@ def generate_site(docs_dir='docs', output_file='index.html'):
                     behavior: 'smooth'
                 });
             }
-            
-            // Update active dot based on scroll position
-            function updateActiveDot() {
-                const scrollLeft = container.scrollLeft;
-                const containerWidth = container.clientWidth;
-                const scrollWidth = container.scrollWidth;
-                
-                // Calculate which article is currently visible (reversed order)
-                const scrollProgress = 1 - (scrollLeft / (scrollWidth - containerWidth));
-                const activeIndex = Math.round(scrollProgress * (contents.length - 1));
-                
-                dots.forEach((dot) => {
-                    const dotIndex = parseInt(dot.getAttribute('data-index'));
-                    if (dotIndex === activeIndex) {
-                        dot.classList.add('active');
-                    } else {
-                        dot.classList.remove('active');
-                    }
-                });
-            }
-            
-            // Add scroll event listener
-            if (container) {
-                container.addEventListener('scroll', updateActiveDot);
-                updateActiveDot(); // Initial call
-            }
-            
-            // Add click handlers to dots
-            // In vertical writing: right = start (頭), left = end (お尻)
-            // Articles are arranged from right to left: newest → oldest
-            dots.forEach((dot) => {
-                dot.addEventListener('click', () => {
-                    const dotIndex = parseInt(dot.getAttribute('data-index'));
-                    let targetScroll = 0;
-                    
-                    // Dots arrangement (right to left):
-                    // Right dot: data-index="2" → Jump to rightmost edge (start)
-                    // Middle dot: data-index="1" → Jump to 0000's end (left edge)
-                    // Left dot: data-index="0" → Jump to 20250720's end (left edge)
-                    
-                    if (dotIndex === 2) {
-                        // Right dot: Jump to the rightmost edge (container start)
-                        targetScroll = container.scrollWidth - container.clientWidth;
-                    } else if (dotIndex === 1) {
-                        // Middle dot: Jump to 0000's end (left edge)
-                        // 0000 is the leftmost article (contents[2])
-                        targetScroll = 0; // 0000's left edge is at the very left
-                    } else if (dotIndex === 0) {
-                        // Left dot: Jump to 20250720's end (left edge)
-                        // 20250720 is the second article from right (contents[1])
-                        // Calculate distance from right: newest article width + margin
-                        const distanceFromRight = contents[0].offsetWidth + 60 + contents[1].offsetWidth;
-                        targetScroll = container.scrollWidth - distanceFromRight;
-                    }
-                    
-                    container.scrollTo({
-                        left: targetScroll,
-                        behavior: 'smooth'
-                    });
-                });
-            });
         });
     </script>
 </head>
@@ -326,14 +237,6 @@ def generate_site(docs_dir='docs', output_file='index.html'):
             {html_body}
         </div>
 '''
-    
-    html_content += '''    </div>
-    <div class="progress-dots">
-'''
-    
-    # Add dots for each article (reversed order for vertical writing)
-    for i in range(len(md_files) - 1, -1, -1):
-        html_content += f'        <div class="dot" data-index="{i}"></div>\n'
     
     html_content += '''    </div>
 </body>
