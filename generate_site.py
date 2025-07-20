@@ -257,8 +257,9 @@ def generate_site(docs_dir='docs', output_file='index.html'):
                 const scrollProgress = 1 - (scrollLeft / (scrollWidth - containerWidth));
                 const activeIndex = Math.round(scrollProgress * (contents.length - 1));
                 
-                dots.forEach((dot, index) => {
-                    if (index === activeIndex) {
+                dots.forEach((dot) => {
+                    const dotIndex = parseInt(dot.getAttribute('data-index'));
+                    if (dotIndex === activeIndex) {
                         dot.classList.add('active');
                     } else {
                         dot.classList.remove('active');
@@ -273,11 +274,26 @@ def generate_site(docs_dir='docs', output_file='index.html'):
             }
             
             // Add click handlers to dots
-            dots.forEach((dot, index) => {
+            dots.forEach((dot) => {
                 dot.addEventListener('click', () => {
-                    // Calculate scroll position for this article (reversed order)
-                    const articleWidth = contents[0].offsetWidth + 60; // width + margin
-                    const targetScroll = scrollWidth - containerWidth - (index * articleWidth);
+                    const dotIndex = parseInt(dot.getAttribute('data-index'));
+                    
+                    // Calculate scroll position to the beginning (rightmost edge) of the article
+                    let targetScroll = 0;
+                    
+                    if (dotIndex === 0) {
+                        // First article (0000.md) - scroll to show its rightmost edge
+                        targetScroll = container.scrollWidth - container.clientWidth;
+                    } else {
+                        // Calculate position for other articles
+                        // Get cumulative width up to the target article
+                        let cumulativeWidth = 0;
+                        for (let i = 0; i < dotIndex; i++) {
+                            cumulativeWidth += contents[i].offsetWidth + 60; // width + margin
+                        }
+                        // Scroll to show the rightmost edge of the target article
+                        targetScroll = container.scrollWidth - container.clientWidth - cumulativeWidth;
+                    }
                     
                     container.scrollTo({
                         left: targetScroll,
@@ -307,8 +323,8 @@ def generate_site(docs_dir='docs', output_file='index.html'):
     <div class="progress-dots">
 '''
     
-    # Add dots for each article (in original order)
-    for i in range(len(md_files)):
+    # Add dots for each article (reversed order for vertical writing)
+    for i in range(len(md_files) - 1, -1, -1):
         html_content += f'        <div class="dot" data-index="{i}"></div>\n'
     
     html_content += '''    </div>
