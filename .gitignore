@@ -23,3 +23,6 @@ ENV/
 *.tmp
 *.bak
 *.log
+
+# Generated files
+index.html
