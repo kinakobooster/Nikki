@@ -250,6 +250,50 @@ def generate_site(docs_dir='docs', output_file='index.html'):
                 });
             }
             
+            // Function to update active dot based on scroll position
+            function updateActiveDot() {
+                const scrollLeft = container.scrollLeft;
+                const containerWidth = container.clientWidth;
+                const scrollWidth = container.scrollWidth;
+                
+                // Calculate which article is currently most visible
+                let currentArticleIndex = 0;
+                let accumulatedWidth = 0;
+                
+                // Find which article the current scroll position corresponds to
+                for (let i = 0; i < contents.length; i++) {
+                    const articleWidth = contents[i].offsetWidth + 60; // include margin
+                    const articleStartPos = scrollWidth - containerWidth - accumulatedWidth - articleWidth;
+                    const articleEndPos = scrollWidth - containerWidth - accumulatedWidth;
+                    
+                    if (scrollLeft >= articleStartPos && scrollLeft <= articleEndPos) {
+                        currentArticleIndex = i;
+                        break;
+                    }
+                    
+                    accumulatedWidth += articleWidth;
+                }
+                
+                // Update dot active state
+                dots.forEach((dot) => {
+                    const dotIndex = parseInt(dot.getAttribute('data-index'));
+                    const targetArticleIndex = dotIndex === 0 ? 0 : dotIndex - 1;
+                    
+                    if (targetArticleIndex === currentArticleIndex) {
+                        dot.classList.add('active');
+                    } else {
+                        dot.classList.remove('active');
+                    }
+                });
+            }
+            
+            // Add scroll event listener
+            if (container) {
+                container.addEventListener('scroll', updateActiveDot);
+                // Initial call after page load
+                setTimeout(updateActiveDot, 100);
+            }
+            
             // Add click handlers to dots
             dots.forEach((dot) => {
                 dot.addEventListener('click', () => {
