@@ -36,7 +36,7 @@ def simple_markdown_to_html(text):
     # Wrap consecutive list items in ul tags
     html = re.sub(r'(<li>.*?</li>\n?)+', lambda m: '<ul>\n' + m.group(0) + '</ul>\n', html, flags=re.DOTALL)
     
-    # Convert paragraphs
+    # Convert paragraphs - handle single line breaks properly for Japanese text
     paragraphs = []
     current_para = []
     in_pre = False
@@ -54,21 +54,24 @@ def simple_markdown_to_html(text):
             
         if line.strip() == '' and not in_pre and not in_list:
             if current_para:
-                paragraphs.append('<p>' + ' '.join(current_para) + '</p>')
+                # Join lines without spaces for Japanese text
+                paragraphs.append('<p>' + ''.join(current_para) + '</p>')
                 current_para = []
         elif not line.startswith('<') or in_pre:
             if not in_pre and not in_list:
-                current_para.append(line)
+                current_para.append(line.strip())
             else:
                 paragraphs.append(line)
         else:
             if current_para:
-                paragraphs.append('<p>' + ' '.join(current_para) + '</p>')
+                # Join lines without spaces for Japanese text
+                paragraphs.append('<p>' + ''.join(current_para) + '</p>')
                 current_para = []
             paragraphs.append(line)
     
     if current_para:
-        paragraphs.append('<p>' + ' '.join(current_para) + '</p>')
+        # Join lines without spaces for Japanese text
+        paragraphs.append('<p>' + ''.join(current_para) + '</p>')
     
     return '\n'.join(paragraphs)
 
@@ -119,7 +122,7 @@ def generate_site(docs_dir='docs', output_file='index.html'):
             flex-shrink: 0;
             width: auto;
             writing-mode: vertical-rl;
-            text-orientation: upright;
+            text-orientation: mixed;
         }
         
         .progress-dots {
