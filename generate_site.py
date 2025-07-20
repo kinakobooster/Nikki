@@ -208,10 +208,39 @@ def generate_site(docs_dir='docs', output_file='index.html'):
         ::-webkit-scrollbar-thumb:hover {
             background: #555;
         }
+        
+        .progress-dots {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+        
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #ccc;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .dot.active {
+            background-color: #333;
+        }
+        
+        .dot:hover {
+            background-color: #666;
+        }
     </style>
     <script>
         window.addEventListener('load', function() {
             const container = document.querySelector('.container');
+            const dots = document.querySelectorAll('.dot');
+            const contents = document.querySelectorAll('.content');
             
             if (container) {
                 // Scroll to the rightmost position
@@ -220,6 +249,40 @@ def generate_site(docs_dir='docs', output_file='index.html'):
                     behavior: 'smooth'
                 });
             }
+            
+            // Add click handlers to dots
+            dots.forEach((dot) => {
+                dot.addEventListener('click', () => {
+                    const dotIndex = parseInt(dot.getAttribute('data-index'));
+                    
+                    // Articles are in DOM from right to left (reversed order)
+                    // Dots are now: rightmost dot = data-index 0, leftmost dot = data-index 2
+                    // We want each dot to jump to its corresponding article's right edge (beginning)
+                    
+                    let targetScroll = 0;
+                    
+                    // Jump to article at index (dotIndex - 1) to correct the offset
+                    const targetArticleIndex = dotIndex === 0 ? 0 : dotIndex - 1;
+                    
+                    if (targetArticleIndex === 0) {
+                        // Jump to article 0's right edge (container's right edge)
+                        targetScroll = container.scrollWidth - container.clientWidth;
+                    } else {
+                        // Calculate position to show right edge of target article
+                        // Sum widths of articles from right (index 0) up to but not including target
+                        for (let i = 0; i < targetArticleIndex; i++) {
+                            targetScroll += contents[i].offsetWidth + 60; // 60px margin
+                        }
+                        // Position to show right edge of target article
+                        targetScroll = container.scrollWidth - container.clientWidth - targetScroll;
+                    }
+                    
+                    container.scrollTo({
+                        left: targetScroll,
+                        behavior: 'smooth'
+                    });
+                });
+            });
         });
     </script>
 </head>
@@ -237,6 +300,14 @@ def generate_site(docs_dir='docs', output_file='index.html'):
             {html_body}
         </div>
 '''
+    
+    html_content += '''    </div>
+    <div class="progress-dots">
+'''
+    
+    # Add dots for each article (reverse order so rightmost dot is index 0)
+    for i in range(len(md_files) - 1, -1, -1):
+        html_content += f'        <div class="dot" data-index="{i}"></div>\n'
     
     html_content += '''    </div>
 </body>
