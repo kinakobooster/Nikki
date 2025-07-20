@@ -276,25 +276,31 @@ def generate_site(docs_dir='docs', output_file='index.html'):
             }
             
             // Add click handlers to dots
+            // In vertical writing: right = start (頭), left = end (お尻)
+            // Articles are arranged from right to left: newest → oldest
             dots.forEach((dot) => {
                 dot.addEventListener('click', () => {
                     const dotIndex = parseInt(dot.getAttribute('data-index'));
-                    
-                    // Jump to the end (left edge) of the previous article
                     let targetScroll = 0;
                     
-                    if (dotIndex === 0) {
-                        // For the first article (0000), scroll to the very end
-                        targetScroll = 0;
-                    } else {
-                        // Get cumulative width up to the previous article's end
-                        let cumulativeWidth = 0;
-                        for (let i = 0; i < dotIndex; i++) {
-                            cumulativeWidth += contents[i].offsetWidth + 60; // width + margin
-                        }
-                        
-                        // Scroll to show the end (left edge) of the previous article
-                        targetScroll = container.scrollWidth - cumulativeWidth;
+                    // Dots arrangement (right to left):
+                    // Right dot: data-index="2" → Jump to rightmost edge (start)
+                    // Middle dot: data-index="1" → Jump to 0000's end (left edge)
+                    // Left dot: data-index="0" → Jump to 20250720's end (left edge)
+                    
+                    if (dotIndex === 2) {
+                        // Right dot: Jump to the rightmost edge (container start)
+                        targetScroll = container.scrollWidth - container.clientWidth;
+                    } else if (dotIndex === 1) {
+                        // Middle dot: Jump to 0000's end (left edge)
+                        // 0000 is the leftmost article (contents[2])
+                        targetScroll = 0; // 0000's left edge is at the very left
+                    } else if (dotIndex === 0) {
+                        // Left dot: Jump to 20250720's end (left edge)
+                        // 20250720 is the second article from right (contents[1])
+                        // Calculate distance from right: newest article width + margin
+                        const distanceFromRight = contents[0].offsetWidth + 60 + contents[1].offsetWidth;
+                        targetScroll = container.scrollWidth - distanceFromRight;
                     }
                     
                     container.scrollTo({
