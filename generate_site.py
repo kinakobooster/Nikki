@@ -280,19 +280,22 @@ def generate_site(docs_dir='docs', output_file='index.html'):
                 dot.addEventListener('click', () => {
                     const dotIndex = parseInt(dot.getAttribute('data-index'));
                     
-                    // Calculate scroll position to center the article's right edge (start point)
+                    // Jump to the end (left edge) of the previous article
                     let targetScroll = 0;
                     
-                    // Get cumulative width up to the target article
-                    let cumulativeWidth = 0;
-                    for (let i = 0; i < dotIndex; i++) {
-                        cumulativeWidth += contents[i].offsetWidth + 60; // width + margin
+                    if (dotIndex === 0) {
+                        // For the first article (0000), scroll to the very end
+                        targetScroll = 0;
+                    } else {
+                        // Get cumulative width up to the previous article's end
+                        let cumulativeWidth = 0;
+                        for (let i = 0; i < dotIndex; i++) {
+                            cumulativeWidth += contents[i].offsetWidth + 60; // width + margin
+                        }
+                        
+                        // Scroll to show the end (left edge) of the previous article
+                        targetScroll = container.scrollWidth - cumulativeWidth;
                     }
-                    
-                    // Calculate position to center the article's right edge
-                    // scrollWidth - cumulativeWidth gives us the article's right edge position
-                    // Subtract half the container width to center it
-                    targetScroll = container.scrollWidth - cumulativeWidth - (container.clientWidth / 2);
                     
                     container.scrollTo({
                         left: targetScroll,
