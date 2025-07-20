@@ -280,7 +280,7 @@ def generate_site(docs_dir='docs', output_file='index.html'):
                 dot.addEventListener('click', () => {
                     const dotIndex = parseInt(dot.getAttribute('data-index'));
                     
-                    // Calculate scroll position to center the article title
+                    // Calculate scroll position to center the article's right edge (start point)
                     let targetScroll = 0;
                     
                     // Get cumulative width up to the target article
@@ -289,11 +289,10 @@ def generate_site(docs_dir='docs', output_file='index.html'):
                         cumulativeWidth += contents[i].offsetWidth + 60; // width + margin
                     }
                     
-                    // Calculate position to center the article
-                    // scrollWidth - clientWidth gives us the max scroll position
-                    // We subtract the cumulative width to get to the article's right edge
-                    // Then subtract half the container width to center it
-                    targetScroll = container.scrollWidth - container.clientWidth - cumulativeWidth - (container.clientWidth / 2);
+                    // Calculate position to center the article's right edge
+                    // scrollWidth - cumulativeWidth gives us the article's right edge position
+                    // Subtract half the container width to center it
+                    targetScroll = container.scrollWidth - cumulativeWidth - (container.clientWidth / 2);
                     
                     container.scrollTo({
                         left: targetScroll,
