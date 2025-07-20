@@ -160,7 +160,8 @@ def generate_site(docs_dir='docs', output_file='index.html'):
             font-size: 1.8em;
             margin-bottom: 20px;
             color: #333;
-            font-weight: bold;
+            font-family: 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
+            font-weight: 700;
             letter-spacing: 0.1em;
         }
         
@@ -168,7 +169,8 @@ def generate_site(docs_dir='docs', output_file='index.html'):
             font-size: 1.4em;
             margin-bottom: 15px;
             color: #444;
-            font-weight: bold;
+            font-family: 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
+            font-weight: 700;
         }
         
         p {
@@ -278,22 +280,17 @@ def generate_site(docs_dir='docs', output_file='index.html'):
                 dot.addEventListener('click', () => {
                     const dotIndex = parseInt(dot.getAttribute('data-index'));
                     
-                    // Calculate scroll position to the beginning (rightmost edge) of the article
+                    // Calculate scroll position to show the right edge of the article
                     let targetScroll = 0;
                     
-                    if (dotIndex === 0) {
-                        // First article (0000.md) - scroll to show its rightmost edge
-                        targetScroll = container.scrollWidth - container.clientWidth;
-                    } else {
-                        // Calculate position for other articles
-                        // Get cumulative width up to the target article
-                        let cumulativeWidth = 0;
-                        for (let i = 0; i < dotIndex; i++) {
-                            cumulativeWidth += contents[i].offsetWidth + 60; // width + margin
-                        }
-                        // Scroll to show the rightmost edge of the target article
-                        targetScroll = container.scrollWidth - container.clientWidth - cumulativeWidth;
+                    // Get cumulative width up to and including the target article
+                    let cumulativeWidth = 0;
+                    for (let i = 0; i <= dotIndex; i++) {
+                        cumulativeWidth += contents[i].offsetWidth + (i < contents.length - 1 ? 60 : 0); // width + margin (except last)
                     }
+                    
+                    // Scroll to show the right edge of the target article
+                    targetScroll = container.scrollWidth - container.clientWidth - cumulativeWidth + contents[dotIndex].offsetWidth;
                     
                     container.scrollTo({
                         left: targetScroll,
