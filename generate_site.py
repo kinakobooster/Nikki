@@ -235,6 +235,128 @@ def generate_site(docs_dir='docs', output_file='index.html'):
         .dot:hover {
             background-color: #666;
         }
+        
+        /* アクセスカウンター */
+        .access-counter {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 10px 20px;
+            border-radius: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            font-size: 14px;
+            z-index: 1000;
+            writing-mode: horizontal-tb;
+            font-family: 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
+        }
+        
+        .counter-label {
+            color: #666;
+            margin-right: 5px;
+        }
+        
+        #access-count {
+            font-weight: bold;
+            color: #3498db;
+            font-size: 16px;
+        }
+        
+        .kiriban {
+            margin-left: 10px;
+            color: #e74c3c;
+            font-weight: bold;
+            display: none;
+            animation: bounce 0.5s ease;
+        }
+        
+        /* いいねボタン */
+        .like-section {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 30px;
+            padding: 15px 30px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            writing-mode: horizontal-tb;
+        }
+        
+        .like-section.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .like-button {
+            background: none;
+            border: none;
+            color: #667eea;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
+            text-decoration: none;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .like-button:hover:not(:disabled) {
+            color: #764ba2;
+            transform: scale(1.05);
+        }
+        
+        .like-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .like-message {
+            margin-left: 15px;
+            font-size: 14px;
+            font-family: 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .thank-you {
+            color: #27ae60;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .like-count {
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .zorome {
+            color: #e74c3c;
+            font-weight: bold;
+            animation: pulse 1s ease infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
     </style>
     <script>
         window.addEventListener('load', function() {
@@ -287,11 +409,30 @@ def generate_site(docs_dir='docs', output_file='index.html'):
                 });
             }
             
+            // Function to check if scrolled to the end (left side)
+            function checkLikeButtonVisibility() {
+                const likeSection = document.querySelector('.like-section');
+                if (container && likeSection) {
+                    // Check if we're at the leftmost position (scrollLeft = 0)
+                    if (container.scrollLeft <= 50) {
+                        likeSection.classList.add('visible');
+                    } else {
+                        likeSection.classList.remove('visible');
+                    }
+                }
+            }
+            
             // Add scroll event listener
             if (container) {
-                container.addEventListener('scroll', updateActiveDot);
+                container.addEventListener('scroll', () => {
+                    updateActiveDot();
+                    checkLikeButtonVisibility();
+                });
                 // Initial call after page load
-                setTimeout(updateActiveDot, 100);
+                setTimeout(() => {
+                    updateActiveDot();
+                    checkLikeButtonVisibility();
+                }, 100);
             }
             
             // Add click handlers to dots
@@ -327,10 +468,172 @@ def generate_site(docs_dir='docs', output_file='index.html'):
                     });
                 });
             });
+            
+            // CounterAPI V2設定（公開カウンター）
+            const WORKSPACE = 'nikkisite2025';
+            const ACCESS_COUNTER = 'totalvisits';
+            const LIKE_COUNTER = 'totallikes';
+            
+            // ゾロ目チェック
+            function isZorome(num) {
+                if (num < 11) return false;
+                const str = num.toString();
+                return str.split('').every(digit => digit === str[0]);
+            }
+            
+            // アクセスカウンター（V2 API: カウントアップして値を取得）
+            async function updateAccessCounter() {
+                try {
+                    // V2エンドポイント（公開カウンター、認証不要）
+                    const url = `https://api.counterapi.dev/v2/${WORKSPACE}/${ACCESS_COUNTER}/up`;
+                    const response = await fetch(url);
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        const count = data.data.up_count;
+                        document.getElementById('access-count').textContent = count.toLocaleString();
+                        
+                        if (isZorome(count)) {
+                            const kiribanEl = document.getElementById('access-kiriban');
+                            kiribanEl.textContent = 'キリ番！';
+                            kiribanEl.style.display = 'inline';
+                            setTimeout(() => { kiribanEl.style.display = 'none'; }, 5000);
+                        }
+                    } else {
+                        console.error('アクセスカウンターエラー:', response.status, await response.text());
+                        document.getElementById('access-count').textContent = '-';
+                    }
+                } catch (error) {
+                    console.error('アクセスカウンターエラー:', error);
+                    document.getElementById('access-count').textContent = '-';
+                }
+            }
+            
+            // 現在のアクセス数表示（V2 API: カウントアップせずに値を取得）
+            async function showCurrentAccessCount() {
+                try {
+                    const url = `https://api.counterapi.dev/v2/${WORKSPACE}/${ACCESS_COUNTER}`;
+                    const response = await fetch(url);
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        const count = data.data.up_count;
+                        document.getElementById('access-count').textContent = count.toLocaleString();
+                    }
+                } catch (error) {
+                    console.error('アクセス数取得エラー:', error);
+                }
+            }
+            
+            // いいねボタン処理（V2 API）
+            async function handleLikeButton() {
+                const button = document.getElementById('like-button');
+                const messageDiv = document.getElementById('like-message');
+                button.disabled = true;
+                
+                try {
+                    const url = `https://api.counterapi.dev/v2/${WORKSPACE}/${LIKE_COUNTER}/up`;
+                    const response = await fetch(url);
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        const count = data.data.up_count;
+                        
+                        messageDiv.innerHTML = `
+                            <span class="thank-you">ありがとう！</span>
+                            <span class="like-count">${count.toLocaleString()}</span>
+                            ${isZorome(count) ? '<span class="zorome">ゾロ目だ！</span>' : ''}
+                        `;
+                        
+                        if (isZorome(count)) {
+                            createConfetti();
+                        }
+                        
+                        setTimeout(() => { 
+                            button.disabled = false;
+                            messageDiv.innerHTML = `<span class="like-count">${count.toLocaleString()}</span>`;
+                        }, 3000);
+                    } else {
+                        console.error('いいねエラー:', response.status, await response.text());
+                        messageDiv.innerHTML = '<span style="color: red;">エラー</span>';
+                        button.disabled = false;
+                    }
+                } catch (error) {
+                    console.error('いいねエラー:', error);
+                    messageDiv.innerHTML = '<span style="color: red;">エラー</span>';
+                    button.disabled = false;
+                }
+            }
+            
+            // 紙吹雪エフェクト
+            function createConfetti() {
+                const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#e056fd'];
+                for (let i = 0; i < 50; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.style.cssText = `
+                        position: fixed;
+                        width: 10px;
+                        height: 10px;
+                        background: ${colors[Math.floor(Math.random() * colors.length)]};
+                        left: ${Math.random() * 100}%;
+                        top: -10px;
+                        opacity: ${Math.random() * 0.5 + 0.5};
+                        pointer-events: none;
+                        z-index: 9999;
+                    `;
+                    document.body.appendChild(confetti);
+                    
+                    confetti.animate([
+                        { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
+                        { transform: `translateY(${window.innerHeight + 10}px) rotate(${Math.random() * 720}deg)`, opacity: 0 }
+                    ], {
+                        duration: (Math.random() * 3 + 2) * 1000,
+                        easing: 'ease-out'
+                    }).onfinish = () => confetti.remove();
+                }
+            }
+            
+            // 現在のいいね数表示（V2 API）
+            async function showCurrentLikeCount() {
+                try {
+                    const url = `https://api.counterapi.dev/v2/${WORKSPACE}/${LIKE_COUNTER}`;
+                    const response = await fetch(url);
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        const count = data.data.up_count;
+                        document.getElementById('like-message').innerHTML = 
+                            `<span class="like-count">${count.toLocaleString()}</span>`;
+                    }
+                } catch (error) {
+                    console.error('いいね数取得エラー:', error);
+                    document.getElementById('like-message').innerHTML = '';
+                }
+            }
+            
+            // カウンター初期化
+            if (!sessionStorage.getItem('counted')) {
+                updateAccessCounter();
+                sessionStorage.setItem('counted', 'true');
+            } else {
+                showCurrentAccessCount();
+            }
+            
+            showCurrentLikeCount();
+            
+            // いいねボタンイベント
+            document.getElementById('like-button').addEventListener('click', handleLikeButton);
         });
     </script>
 </head>
 <body>
+    <!-- アクセスカウンター（右上） -->
+    <div id="access-counter" class="access-counter">
+        <span class="counter-label">訪問者数:</span>
+        <span id="access-count">-</span>
+        <span id="access-kiriban" class="kiriban"></span>
+    </div>
+    
     <div class="container">
 '''
     
@@ -346,6 +649,18 @@ def generate_site(docs_dir='docs', output_file='index.html'):
 '''
     
     html_content += '''    </div>
+    
+    <!-- いいねボタン（下中央固定） -->
+    <div class="like-section">
+        <div style="display: flex; align-items: center;">
+            <button id="like-button" class="like-button" type="button">
+                <span class="like-icon">✨</span>
+                <span class="like-text">いいね！</span>
+            </button>
+            <div id="like-message" class="like-message"></div>
+        </div>
+    </div>
+    
     <div class="progress-dots">
 '''
     
