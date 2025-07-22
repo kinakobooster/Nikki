@@ -28,6 +28,15 @@ jobs:
       with:
         python-version: '3.x'
         
+    - name: Install dependencies
+      run: pip install python-dotenv
+      
+    - name: Set environment variables
+      run: |
+        echo "COUNTER_WORKSPACE=nikkisite2025" >> $GITHUB_ENV
+        echo "ACCESS_COUNTER=totalvisits" >> $GITHUB_ENV
+        echo "LIKE_COUNTER=totallikes" >> $GITHUB_ENV
+        
     - name: Generate static site
       run: python generate_site.py
       

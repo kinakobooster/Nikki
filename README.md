@@ -26,7 +26,11 @@ docs/
 
 ファイル名は自動的にタイトルとして使用されます。番号を付けることで表示順を制御できます。
 
-### 2. サイトの生成
+### 2. 環境設定（オプション）
+
+プロジェクトでCounter APIを使用してアクセス数やいいね機能を追加する場合は、`.env`ファイルを作成して設定します。詳細は下記の「セットアップ」セクションを参照してください。
+
+### 3. サイトの生成
 
 ```bash
 python3 generate_site.py
@@ -34,7 +38,7 @@ python3 generate_site.py
 
 これで`index.html`が生成されます。
 
-### 3. サイトの閲覧
+### 4. サイトの閲覧
 
 生成された`index.html`をブラウザで開くだけです：
 
@@ -81,9 +85,35 @@ xdg-open index.html  # Linux
 - マウスホイールまたはトラックパッドで操作
 - 起動時は最新記事（最も左）へ自動スクロール
 
+## セットアップ
+
+### 1. 必要なパッケージのインストール
+
+```bash
+pip install python-dotenv
+```
+
+### 2. 環境設定
+
+`.env`ファイルを作成して、カウンターAPIの設定を行います：
+
+```bash
+# Counter API V2 設定
+COUNTER_WORKSPACE=your_workspace_name
+ACCESS_COUNTER=your_access_counter_name
+LIKE_COUNTER=your_like_counter_name
+```
+
+### 3. サイトの生成
+
+```bash
+python3 generate_site.py
+```
+
 ## システム要件
 
 - Python 3.6以上
+- `python-dotenv`パッケージ
 - モダンなウェブブラウザ（Chrome, Firefox, Safari, Edge）
 
 ## ライセンス

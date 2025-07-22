@@ -2,6 +2,10 @@
 import os
 import re
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 def simple_markdown_to_html(text):
     """Simple markdown to HTML converter without external dependencies"""
@@ -470,9 +474,9 @@ def generate_site(docs_dir='docs', output_file='index.html'):
             });
             
             // CounterAPI V2設定（公開カウンター）
-            const WORKSPACE = 'nikkisite2025';
-            const ACCESS_COUNTER = 'totalvisits';
-            const LIKE_COUNTER = 'totallikes';
+            const WORKSPACE = '${os.getenv("COUNTER_WORKSPACE", "nikkisite2025")}';
+            const ACCESS_COUNTER = '${os.getenv("ACCESS_COUNTER", "totalvisits")}';
+            const LIKE_COUNTER = '${os.getenv("LIKE_COUNTER", "totallikes")}';
             
             // ゾロ目チェック
             function isZorome(num) {

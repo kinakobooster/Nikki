@@ -10,6 +10,8 @@ Nikkiは縦書きレイアウトの日記サイトです。2025年7月20日か�
 
 - 静的サイトジェネレーター: Python (generate_site.py)
 - フロントエンド: Pure HTML/CSS/JavaScript
+- 環境変数管理: python-dotenv (.env)
+- アクセスカウンター: Counter API V2
 - ホスティング: GitHub Pages
 
 ## ディレクトリ構造
@@ -20,6 +22,7 @@ Nikkiは縦書きレイアウトの日記サイトです。2025年7月20日か�
 ├── CLAUDE.md          # 技術仕様書（このファイル）
 ├── generate_site.py   # 静的サイトジェネレーター
 ├── index.html         # 生成されるHTMLファイル（gitignore済み）
+├── .env               # 環境変数設定（Counter API設定）
 ├── docs/              # マークダウン記事
 │   ├── 0000.md       # イントロダクション
 │   ├── 20250720.md   # 7月20日の記事
@@ -85,8 +88,31 @@ Nikkiは縦書きレイアウトの日記サイトです。2025年7月20日か�
    - ドットクリックハンドラーの分岐処理（現在は3記事前提）
    - 各ドットの動作先の再定義
 
+## 環境変数設定
+
+### .envファイルの設定項目
+
+```bash
+# Counter API V2 設定
+COUNTER_WORKSPACE=nikkisite2025
+ACCESS_COUNTER=totalvisits
+LIKE_COUNTER=totallikes
+```
+
+### 設定項目の説明
+
+- `COUNTER_WORKSPACE`: Counter API V2のワークスペース名
+- `ACCESS_COUNTER`: アクセス数用のカウンター名
+- `LIKE_COUNTER`: いいね数用のカウンター名
+
+### generate_site.pyでの使用
+
+環境変数は`os.getenv()`を使用してJavaScriptテンプレート内に埋め込まれます。環境変数が設定されていない場合は、デフォルト値が使用されます。
+
 ## 更新履歴
 
+- 2025-01-22: Counter API設定を.envファイルに外部化
+- 2025-01-22: python-dotenvパッケージの依存関係を追加
 - 2025-01-20: ドットナビゲーション仕様を縦書きレイアウトに最適化
 - 2025-01-20: 見出しをゴシック体に変更
 - 2025-01-20: index.htmlをgitignoreに追加
