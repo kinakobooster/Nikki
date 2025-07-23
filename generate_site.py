@@ -2,10 +2,14 @@
 import os
 import re
 from pathlib import Path
-from dotenv import load_dotenv
 
-# Load environment variables from .env file
-load_dotenv()
+# Try to load environment variables from .env file if dotenv is available
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    # dotenv not available, use environment variables or defaults
+    pass
 
 def simple_markdown_to_html(text):
     """Simple markdown to HTML converter without external dependencies"""
@@ -91,6 +95,11 @@ def generate_site(docs_dir='docs', output_file='index.html'):
     if not md_files:
         print(f"No markdown files found in {docs_dir}")
         return
+    
+    # Get environment variables
+    workspace = os.getenv("COUNTER_WORKSPACE", "nikkisite2025")
+    access_counter = os.getenv("ACCESS_COUNTER", "totalvisits")
+    like_counter = os.getenv("LIKE_COUNTER", "totallikes")
     
     html_content = '''<!DOCTYPE html>
 <html lang="ja">
@@ -474,9 +483,9 @@ def generate_site(docs_dir='docs', output_file='index.html'):
             });
             
             // CounterAPI V2設定（公開カウンター）
-            const WORKSPACE = '${os.getenv("COUNTER_WORKSPACE", "nikkisite2025")}';
-            const ACCESS_COUNTER = '${os.getenv("ACCESS_COUNTER", "totalvisits")}';
-            const LIKE_COUNTER = '${os.getenv("LIKE_COUNTER", "totallikes")}';
+            const WORKSPACE = 'WORKSPACE_PLACEHOLDER';
+            const ACCESS_COUNTER = 'ACCESS_COUNTER_PLACEHOLDER';
+            const LIKE_COUNTER = 'LIKE_COUNTER_PLACEHOLDER';
             
             // ゾロ目チェック
             function isZorome(num) {
@@ -675,6 +684,11 @@ def generate_site(docs_dir='docs', output_file='index.html'):
     html_content += '''    </div>
 </body>
 </html>'''
+    
+    # Replace placeholders with actual values
+    html_content = html_content.replace('WORKSPACE_PLACEHOLDER', workspace)
+    html_content = html_content.replace('ACCESS_COUNTER_PLACEHOLDER', access_counter)
+    html_content = html_content.replace('LIKE_COUNTER_PLACEHOLDER', like_counter)
     
     with open(output_file, 'w', encoding='utf-8') as f:
         f.write(html_content)
