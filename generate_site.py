@@ -299,6 +299,9 @@ def generate_site(docs_dir='docs', output_file='index.html'):
             padding: 15px 30px;
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
             writing-mode: horizontal-tb;
+            min-width: 200px;
+            display: flex;
+            justify-content: center;
         }
         
         .like-section.visible {
@@ -319,6 +322,7 @@ def generate_site(docs_dir='docs', output_file='index.html'):
             display: flex;
             align-items: center;
             gap: 8px;
+            white-space: nowrap;
         }
         
         .like-button:hover:not(:disabled) {
@@ -348,6 +352,8 @@ def generate_site(docs_dir='docs', output_file='index.html'):
         .like-count {
             color: #667eea;
             font-weight: bold;
+            min-width: 50px;
+            text-align: center;
         }
         
         .zorome {
